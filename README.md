@@ -1,2 +1,2 @@
 # Pyek
-a peep of Python
+a peek of Python
