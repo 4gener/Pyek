@@ -17,4 +17,4 @@
   - **Compiler：** 根据语法树生成指令集合，即 <u>Python 字节码</u>
   - **Code Evaluator：** <u>解释执行</u>字节码，也被称为执行引擎
 
-![python structure](images/overall structure.png)
+![python structure](/image/overall structure.png)
