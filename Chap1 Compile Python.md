@@ -33,8 +33,7 @@
 - 📁 **Objects:** 包含了 Python ***所有的内建对象***，包括整数，list 和 dict 等，同时包括了 Python 在运行时需要的***所有内部使用对象的实现***
 
 
-- 📁 **Python:** 包含了 Python 解释器中 ***Compiler 和执行引擎部分***，是 Python 运行的核心所在***
+- 📁 **Python:** 包含了 Python 解释器中 ***Compiler 和执行引擎部分***
 
 
 - 📁 **PCBuild:** 包含了 ***Visual Studio 的工程文件***
-
