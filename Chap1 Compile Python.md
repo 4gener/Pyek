@@ -23,14 +23,14 @@
 
 ![directory_structure](https://github.com/igululu/Pyek/blob/master/image/directory_structure.png?raw=true)
 
-- :file_folder: **Include:** 包含了 Python 提供的***所有头文件***`.h`，如果用户需要自己用 C 或 C++ 来编写自定义模块来扩展 Python ，那么就需要用到这里提供的头文件
-- 📁 **Lib:** 包含了 Python 自带的***所有标准库***，这些库都是`.py`且对速度没有严格要求
-- 📁 **Modules:** 包含了所有用 C 编写的模块，这些模块都是对速度要求严格的模块，所以都是`.c`
+- :file_folder: **Include:** 包含了 Python 提供的 ***所有头文件*** `.h`，如果用户需要自己用 C 或 C++ 来编写自定义模块来扩展 Python ，那么就需要用到这里提供的头文件
+- 📁 **Lib:** 包含了 Python 自带的 ***所有标准库*** ，这些库都是 `.py` 且对速度没有严格要求
+- 📁 **Modules:** 包含了所有用 C 编写的模块，这些模块都是对速度要求严格的模块，所以都是 `.c`
 
 
-- 📁 **Parser:** 包含了 Python 解释器中的 ***Scanner*** 和 ***Parser*** 部分，即对 Python 源代码进行***词法分析***和***语法分析***的部分。除此之外也包括一些有用的工具，它们可以***根据 Python 的语法自动生成 Python 的词法和语法分析器***，类似 YACC
+- 📁 **Parser:** 包含了 Python 解释器中的 ***Scanner*** 和 ***Parser*** 部分，即对 Python 源代码进行***词法分析***和***语法分析***的部分。除此之外也包括一些有用的工具，它们可以 ***根据 Python 的语法自动生成 Python 的词法和语法分析器*** ，类似 YACC
 
-- 📁 **Objects:** 包含了 Python ***所有的内建对象***，包括整数，list 和 dict 等，同时包括了 Python 在运行时需要的***所有内部使用对象的实现***
+- 📁 **Objects:** 包含了 Python ***所有的内建对象***，包括整数，list 和 dict 等，同时包括了 Python 在运行时需要的 ***所有内部使用对象的实现***
 
 
 - 📁 **Python:** 包含了 Python 解释器中 ***Compiler 和执行引擎部分***
