@@ -19,7 +19,7 @@
 
 - Python 对对象的控制：
 
-  - **规则：**一个对象 *(1)* 一旦被创建，它在内存中的大小就不再发生变化。这就代表着那些需要容纳可变长度的数据的对象只能在对象中维护一个指针 *(2)* ，它指向一个存放着对象取值的可变大小的内存区域 *(3)* 。
+  - **规则：** 一个对象 *(1)* 一旦被创建，它在内存中的大小就不再发生变化。这就代表着那些需要容纳可变长度的数据的对象只能在对象中维护一个指针 *(2)* ，它指向一个存放着对象取值的可变大小的内存区域 *(3)* 。
 
     ![variable_length_object](https://github.com/igululu/Pyek/blob/master/image/variable_length_object.png?raw=truehttps://github.com/igululu/Pyek/blob/master/image/variable_length_object.png?raw=true)
 
