@@ -141,7 +141,7 @@
         { PyObject_HEAD_INIT(type) size },
     ```
 
-    可将该宏函数逐级转化为：
+    可将该宏函数 ***逐级转化*** 为：
 
     ```c++
     { PyObject_HEAD_INIT(&PyType_Type) 0 },
@@ -152,7 +152,7 @@
         1, &PyType_Type }, 0 },
     ```
 
-    通过类型定义可将其类型逐级规约为：
+    通过类型定义可将其类型 ***逐级规约*** 为：
 
     ```c++
     { { _PyObject_HEAD_EXTRA              \
@@ -167,6 +167,6 @@
     PyVarObject,
     ```
 
-    `PyTypeObject`的头部`PyObject_VAR_HEAD`宏恰好也被定义为`PyVarObject`类型。这说明，如上宏函数协同将`PyVarObject_HEAD_INIT(&PyType_Type, 0)`层层转化或规约使其与`PyObject_VAR_HEAD`类型相同，完成`PyType_Type`作为`PyTypeObject`类型的实体化。
+    `PyTypeObject`的头部`PyObject_VAR_HEAD`宏恰好也被定义为`PyVarObject`类型。这说明，如上宏函数协同将`PyVarObject_HEAD_INIT(&PyType_Type, 0)`层层转化或规约使其与`PyObject_VAR_HEAD`类型相同， ***完成`PyType_Type`作为`PyTypeObject`类型的实体化*** 。
 
     ​
