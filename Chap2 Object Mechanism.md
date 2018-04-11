@@ -96,7 +96,7 @@
 
   - `PyType_Type`
 
-    Python 中，每一个对象都可以通过与其关联的类型对象确定其类型，而对于类型对象来说，它的类型就是 `PyType_Type`。
+    Python 中，每一个对象都可以通过与其关联的类型对象确定其类型，而对于类型对象来说，它的类型就是`PyType_Type`。
 
     ```c++
     PyTypeObject PyType_Type = {	// 结构体变量初始化
@@ -169,4 +169,22 @@
 
     `PyTypeObject`的头部`PyObject_VAR_HEAD`宏恰好也被定义为`PyVarObject`类型。这说明，如上宏函数协同将`PyVarObject_HEAD_INIT(&PyType_Type, 0)`层层转化或规约使其与`PyObject_VAR_HEAD`类型相同， ***完成`PyType_Type`作为`PyTypeObject`类型的实体化*** 。
 
-    ​
+- 代码分析 [**floatobject.c**](https://github.com/python/cpython/blob/master/Objects/floatobject.c)
+
+  - `PyFloat_Type`
+
+    ```c++
+    PyTypeObject PyFloat_Type = {
+        PyVarObject_HEAD_INIT(&PyType_Type, 0)	// 初始化对象头
+        "float",
+        sizeof(PyFloatObject),
+        /* ... */
+    };
+    ```
+
+    这是 Python 中最简单的一个类型对象，不过我们可以通过它大概得出一个浮点数对象在运行时的抽象表示，下图中的箭头表示属性中指向对象类型的指针`ob_type`。
+
+    ![object_type_relation](image/object_type_relation.png?raw=true)
+
+
+- 类型关系
