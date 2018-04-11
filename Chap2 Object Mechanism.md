@@ -186,4 +186,134 @@
 
     ![object_type_relation](image/object_type_relation.png?raw=true)
 
-    ​
+### 3. 对象间的继承和多态
+
+- Python 中对类似 C++ 所提供的继承和多态的特性有 ***特殊的实现与维护方式*** 。
+
+  - **实现：**由前文所述可以发现， Python 中所有的内建对象和内部使用对象的内存区域头部都拥有一个`PyObject `，这一点可以视作这些对象都是由`PyObject`继承而来。
+  - **维护：**Python 在创建一个对象之后会分配内存，然后进行初始化。这个对象随后会由一个`PyObject*`来维护，可以说只是 ***指向了它的对象头*** 。随后其它的因类型而异的操作只能通过对象头`PyObject`中的`ob_type`域来判断。这也是 Python 实现多态机制的核心。
+
+- 举例
+
+  ```c++
+  void Print(PyObject* object) {
+  	object->ob_type->tp_print(object);
+  }
+  ```
+
+  在这里可以看出，`Print`函数实际上只是调用了参数的类型对象中的`tp_print`函数。
+
+- 代码分析  [**object.h**](https://github.com/python/cpython/blob/master/Include/object.h)
+
+  Python 实现了一些对于类型对象各种操作的简单包装，从而为 Python 运行时提供了一个统一的多态接口层。
+
+  ```c++
+  Py_hash_t
+  PyObject_Hash(PyObject *v)
+  {
+      PyTypeObject *tp = Py_TYPE(v);
+      if (tp->tp_hash != NULL)
+          return (*tp->tp_hash)(v);
+      /* ... */
+  }
+  ```
+
+### 4. 引用计数
+
+- Python 中一切都是对象，而根据定义，对象中都有一个`ob_refcnt`变量用来 ***维护该对象的引用计数*** 。
+
+- 代码分析  [**object.h**](https://github.com/python/cpython/blob/master/Include/object.h)
+
+  - `_Py_NewRefercence(op)`
+
+    在每一个对象创建的时候，`_Py_NewReference(op)`宏来将对象的引用计数 ***初始化为 1*** 。
+
+    ```c++
+    #define _Py_NewReference(op) (                          \
+        _Py_INC_TPALLOCS(op) _Py_COUNT_ALLOCS_COMMA         \
+        _Py_INC_REFTOTAL  _Py_REF_DEBUG_COMMA               \
+        Py_REFCNT(op) = 1)
+
+    #define Py_REFCNT(ob)           (((PyObject*)(ob))->ob_refcnt)
+    ```
+
+  - `Py_INCREF(op)`
+
+    引用计数 ***增加1*** 。
+
+    ```c++
+    #define Py_INCREF(op) (                         \
+        _Py_INC_REFTOTAL  _Py_REF_DEBUG_COMMA       \
+        ((PyObject *)(op))->ob_refcnt++)
+    ```
+
+  - `Py_DECREF(op)`
+
+    引用计数 ***减少1*** ，若减少后引用计数为0，则调用`_Py_Dealloc(op)`释放该对象所占内存；则调用若减少后引用计数不为0，则交由宏`_Py_CHECK_REFCNT(OP)`处理。
+
+    ```c++
+    #define Py_DECREF(op)                                   \
+        do {                                                \
+            PyObject *_py_decref_tmp = (PyObject *)(op);    \
+            if (_Py_DEC_REFTOTAL  _Py_REF_DEBUG_COMMA       \
+            --(_py_decref_tmp)->ob_refcnt != 0)             \
+                _Py_CHECK_REFCNT(_py_decref_tmp)            \
+            else                                            \
+                _Py_Dealloc(_py_decref_tmp);                \
+        } while (0)
+    ```
+
+  - `_Py_CHECK_REFCNT(OP)`
+
+    当编译选项为`Py_REF_DEBUG`时，编译器会在 ***引用计数为负*** 的情况下报错。其他情况下均默认为不做任何操作。
+
+    ```c++
+    #ifdef Py_REF_DEBUG
+    /* ... */
+    #define _Py_CHECK_REFCNT(OP)                                    \
+    {       if (((PyObject*)OP)->ob_refcnt < 0)                             \
+                    _Py_NegativeRefcount(__FILE__, __LINE__,        \
+                                         (PyObject *)(OP));         \
+    }
+    /* ... */
+    #define _Py_CHECK_REFCNT(OP)    /* a semicolon */;
+    #endif /* Py_REF_DEBUG */
+    ```
+
+  - `Py_XINCREF(op)` `Py_XDECREF(op)`
+
+    当这两个宏函数的参数`op`是一个指向空对象的指针，那么必须使用如下这对宏。
+
+    ```c++
+    #define Py_XINCREF(op)                                \
+        do {                                              \
+            PyObject *_py_xincref_tmp = (PyObject *)(op); \
+            if (_py_xincref_tmp != NULL)                  \
+                Py_INCREF(_py_xincref_tmp);               \
+        } while (0)
+
+    #define Py_XDECREF(op)                                \
+        do {                                              \
+            PyObject *_py_xdecref_tmp = (PyObject *)(op); \
+            if (_py_xdecref_tmp != NULL)                  \
+                Py_DECREF(_py_xdecref_tmp);               \
+        } while (0)
+    ```
+
+  - `_Py_Dealloc(op)`
+
+    调用对象对应的析构函数，它本质上调用了参数的类型对象中的`tp_dealloc` ***析构函数*** 。
+
+    ```c++
+    #define _Py_Dealloc(op) (                               \
+        _Py_INC_TPFREES(op) _Py_COUNT_ALLOCS_COMMA          \
+        (*Py_TYPE(op)->tp_dealloc)((PyObject *)(op)))
+    ```
+
+    **细节：**调用析构函数并不意味着最终一定会调用`free`释放内存空间，因为频繁的申请释放内存空间会影响执行效率。因此 Python 大量采用了 ***内存对象池*** 的技术。所以在析构时，通常只是将对象占用的空间归还到内存池中。
+
+
+    ​				
+    ​			
+    ​		
+    ​	
