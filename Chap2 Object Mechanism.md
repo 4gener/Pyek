@@ -186,5 +186,4 @@
 
     ![object_type_relation](image/object_type_relation.png?raw=true)
 
-
-- 类型关系
+    ​
